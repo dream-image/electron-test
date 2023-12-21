@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP -->
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap: content: https://*;media-src * blob: 'self' http://* 'unsafe-inline' 'unsafe-eval';style-src * 'self' 'unsafe-inline';img-src * 'self' data: content:;connect-src * blob:;">
+  <!-- 上面这里是一个安全策略，设置资源的来源，如果设置了self，那么将无法外部引用资源 -->
+  <title>这是标题</title>
+</head>
+
+<body style="width: 90vw;height: 90vh;">
+  <!-- <hr style=" -webkit-app-region: drag; " /> 
+    无窗口模式下，设置了样式的元素才可以作为拖动整个窗口的锚点   不过好像无效-->
+  <div id="body">
+    <div class="container" onclick="faulttext.fault()">
+      <p class="faulttext">这是一个测试的electron</p>
+      <p class="faulttext">这是一个测试的electron</p>
+      <p class="faulttext">这是一个测试的electron</p>
+      <p class="faulttext">这是一个测试的electron</p>
+    </div>
+  </div>
+
+  <div style="position: absolute;bottom: 0;width: max-content;height: min-content;left: 0;right: 0;margin: auto;">
+    我们正在使用 Node.js <span id="node-version"></span>,
+    Chromium <span id="chrome-version"></span>,
+    和 Electron <span id="electron-version"></span>.
+
+  </div>
+
+
+  <button id="button">按钮</button>
+  <img src="./static/icon@2x.png" style="width: 200px;height: 200px;border-radius: 9999px;" alt="这是图片">
+</body>
+<script src="./renderer/test.js"></script>
+<script>
+
+  const faulttext = {
+    player: {},
+    texts: [],
+    init() {
+      this.texts = [...document.getElementsByClassName('faulttext')];
+    },
+    fault() {
+      clearInterval(this.player);
+      setTimeout(() => {
+        clearInterval(this.player);
+        this.texts.forEach((text) => {
+          text.classList.remove("faulttext_fault");
+          text.style.transform = '';
+          text.style.clipPath = '';
+        });
+      }, 1000)
+      this.player = setInterval(() => {
+        this.texts.forEach((text) => {
+          text.classList.add("faulttext_fault");
+          text.style.transform = `translate(${Math.random() * 60 - 30}%,${Math.random() * 60 - 30}%)`;
+          let x = Math.random() * 100;
+          let y = Math.random() * 100;
+          let h = Math.random() * 50 + 50;
+          let w = Math.random() * 40 + 10;
+          text.style.clipPath = `polygon(${x}% ${y}%, ${x + w}% ${y}%, ${x + w}% ${y + h}%, ${x}% ${y + h}%)`
+
+        })
+      }, 50);
+    }
+  };
+  faulttext.init();
+  setTimeout(() => {
+    faulttext.fault()
+  }, 1000);
+</script>
+<style>
+  #body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    position: absolute;
+    width: 1000px;
+    height: 100px;
+    z-index: 1;
+  }
+
+  .container {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .faulttext {
+
+    width: max-content;
+    position: absolute;
+    font-size: 50px;
+    font-family: '阿里妈妈东方大楷';
+    color: #212121;
+    font-weight: lighter;
+
+    letter-spacing: 0.5rem;
+    user-select: none;
+  }
+
+  .faulttext_fault::after,
+  .faulttext_fault::before {
+    content: "CONTEXT";
+    position: absolute;
+    left: 0;
+    top: 0;
+    mix-blend-mode: screen;
+  }
+
+  .faulttext_fault::after {
+    color: #fbe9e7;
+    transform: translateX(2%);
+  }
+
+  .faulttext_fault::before {
+    color: #e040fb;
+    transform: translateX(-2%);
+  }
+
+  /* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
+  @font-face {
+    font-family: "阿里妈妈东方大楷";
+    font-weight: 400;
+    src: url("//at.alicdn.com/wf/webfont/f2wEXLd1xeef/0HfZvLsZKsjl.woff2") format("woff2"),
+      url("//at.alicdn.com/wf/webfont/f2wEXLd1xeef/P3sYgqUdQc8s.woff") format("woff");
+    font-display: swap;
+  }
+</style>
+
+</html>
